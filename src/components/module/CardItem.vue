@@ -52,6 +52,7 @@ export default {
     border-radius: 6px;
     box-shadow: none;
     background-color: transparent;
+    cursor: pointer;
   }
   .card-image img{
     height: 170px;
@@ -59,7 +60,8 @@ export default {
   }
   .card-content{
     padding: 0;
-    font-size: 1.2em;
+    font-size: 1em;
+    overflow: hidden;
   }
   // .media-content {
   //   margin-top: -5px;

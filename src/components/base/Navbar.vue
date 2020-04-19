@@ -28,6 +28,7 @@ export default {
 }
 .navbar{
     top: 0px;
+    position: sticky;
     align-items: center;
     box-shadow: 4px 1px 5px rgba(0,0,0,0.2);
     display: flex;

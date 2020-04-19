@@ -19,32 +19,49 @@ export default new Vuex.Store({
     add(state, data) {
       const items = state.selected.find((item) => item.id === data.id);
       if (!items) {
-        state.selected.push(data);
+        const send = {
+          id: data.id,
+          name: data.name,
+          qty: 0,
+          price: data.price,
+          image: data.image,
+        };
+        // const send = [...data];
+        state.selected.push(send);
       }
     },
-    addQty(state, id, qty) {
-      const items = state.selected.find((item) => item.id === id);
-      if (items) {
-        items.price *= qty;
-      }
+    addQty(state, data) {
+      // const data = state.selected;
+      const items = state.products.find((item) => item.id === data.id);
+      // if (items) {
+      console.log('product');
+      console.log(items);
+      // console.log(state.products);
+      state.selected[data.index].qty = data.qty;
+      state.selected[data.index].price = items.price * data.qty;
+      // console.log(data);
+
+      // }
     },
   },
   getters: {
-    addQty(context, id, qty) {
-      context.commit('addQty', id, qty);
-    },
+    // addQty(context, id, qty) {
+    //   context.commit('addQty', id, qty);
+    // },
   },
   actions: {
-    addQty(context, id, qty) {
+    addQty(context, data) {
       // const items = context.state.selected.find((item) => item.id === id);
       // if(items) {
-      context.commit('addQty', id, qty);
+      context.commit('addQty', data);
+      // console.log(data);
       // } else{
       //   console.log('gagal');
       // }
     },
     addOrder(context, data) {
       context.commit('add', data);
+      // console.log(data);
     },
     cancelOrder(context) {
       context.commit('cancel');

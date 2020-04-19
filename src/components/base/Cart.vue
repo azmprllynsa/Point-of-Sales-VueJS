@@ -17,7 +17,7 @@
       </div>
       <div class="column is-ordered" v-else>
         <div class="main-list">
-          <div class="column card-order" v-for="order in orderItem" :key="order.id">
+          <div class="column card-order" v-for="(order, index) in orderItem" :key="order.id">
             <div class="card-image">
               <figure class="image-order is-2by2">
                 <img :src="order.image" :alt="order.image">
@@ -29,11 +29,11 @@
               </div>
               <div class="qty-order">
                 <ul>
-                  <li @click="reduceQty(order.id)">-</li>
-                  <li>{{ qty }}</li>
-                  <li @click="addQty(order.id)">+</li>
+                  <li @click="minus(order.id, index)">-</li>
+                  <li>{{ order.qty }}</li>
+                  <li @click="plus(order.id, index)">+</li>
                 </ul>
-                <p>Rp. {{ qty * order.price }}</p>
+                <p>Rp. {{ order.price }}</p>
               </div>
             </div>
           </div>
@@ -71,29 +71,41 @@ export default {
       total: 0,
     };
   },
+
+  // Photo by Jay Wennington on Unsplash
   methods: {
-    addQty(id) {
-      this.qty += 1;
+    plus(id, i) {
+      this.orders[i].qty += 1;
       // console.log(id);
-      this.$store.dispacth('addQty', id, this.qty);
+      const data = {
+        id,
+        qty: this.orders[i].qty || 1,
+        index: i,
+      };
+      this.$store.dispatch('addQty', data);
     },
-    reduceQty() {
-      if (this.qty === 1) {
+
+    minus(id, i) {
+      if (this.orders[i].qty === 1) {
         this.qty = 1;
       } else {
-        this.qty -= 1;
+        this.orders[i].qty -= 1;
       }
+      const data = {
+        id,
+        qty: this.orders[i].qty,
+        index: i,
+      };
+      this.$store.dispatch('addQty', data);
     },
     totalPrice() {
-      console.log(this.qty);
       this.orders = this.orderItem;
       const total = [];
       // console.log(total);
       for (let i = 0; i < this.orders.length; i += 1) {
-        total.push((this.orders[i].price) * this.qty);
+        total.push((this.orders[i].price));
       }
       this.total = total.reduce((a, b) => a + b);
-      console.log(this.total);
     },
   },
   updated() {
@@ -134,6 +146,11 @@ export default {
 
 .cart-title {
   text-align: right;
+}
+
+.image-order img {
+  background-image: cover;
+  height: 100px;
 }
 
 .counter {
@@ -232,6 +249,7 @@ export default {
     border: 1px solid #82DE3A;
     font-weight: bold;
     color: #82DE3A;
+    cursor: pointer;
   }
 
 .minus, .plus {

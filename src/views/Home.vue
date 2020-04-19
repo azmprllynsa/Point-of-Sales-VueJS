@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="column is-gapless is-4 right-side">
-    <Cart/>
+    <Cart @cancelOrder="cancelOrder"/>
   </div>
   <AddItem/>
 </div>
@@ -37,6 +37,9 @@ export default {
     },
     menu(id) {
       this.$store.dispatch('addOrder', id, { qty: 1 });
+    },
+    cancelOrder() {
+      this.$store.dispatch('cancelOrder');
     },
   },
   mounted() {
