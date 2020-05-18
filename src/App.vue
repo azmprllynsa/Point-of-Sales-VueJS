@@ -48,10 +48,13 @@
     color: #ffffff;
   }
   .blue{
-    color: #57CAD5;
+    color: rgb(30, 91, 97);
   }
   .pink{
     color: #F24F8A;
+  }
+  .blues{
+    color: #57CAD5;
   }
   .hide{
     transition: 1s;

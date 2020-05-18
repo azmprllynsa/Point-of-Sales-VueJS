@@ -9,9 +9,6 @@
     <div class="column search">
       <i class="fas fa-search"></i>
     </div>
-    <!-- <div class="column is-4 order">
-      Cart
-    </div> -->
   </div>
 
 </template>

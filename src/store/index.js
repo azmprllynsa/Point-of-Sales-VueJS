@@ -3,65 +3,63 @@ import Vuex from 'vuex';
 import axios from 'axios';
 
 Vue.use(Vuex);
-
+// axios.defaults.headers.common.authorization = 'bisa-dong-please';
 export default new Vuex.Store({
   state: {
+    url: 'http://localhost:8000/api/v1/',
     products: null,
     selected: [],
+    emailUser: localStorage.getItem('email') || null,
+    email: null,
+    orders: null,
+  },
+  getters: {
+    getEmail(state) {
+      return state.email != null;
+    },
   },
   mutations: {
     product(state, data) {
       state.products = data;
     },
+    order(state, data) {
+      state.orders = data;
+    },
     cancel(state) {
       state.selected = [];
     },
+    emailGet(state, data) {
+      state.products = data;
+    },
     add(state, data) {
-      const items = state.selected.find((item) => item.id === data.id);
+      const items = state.selected.find((item) => item.data.id === data.data.id);
+      // console.log(this.item);
       if (!items) {
-        const send = {
-          id: data.id,
-          name: data.name,
-          qty: 0,
-          price: data.price,
-          image: data.image,
-        };
-        // const send = [...data];
-        state.selected.push(send);
+        state.selected.push(data);
       }
     },
-    addQty(state, data) {
-      // const data = state.selected;
-      const items = state.products.find((item) => item.id === data.id);
-      // if (items) {
-      console.log('product');
-      console.log(items);
-      // console.log(state.products);
-      state.selected[data.index].qty = data.qty;
-      state.selected[data.index].price = items.price * data.qty;
-      // console.log(data);
-
-      // }
+    addQty(state, data) { // eslint-disable-line
+      const items = state.selected.find((item) => item.data.id === data.data.id);
+      if (items) {
+        items.qty += 1;
+      }
     },
-  },
-  getters: {
-    // addQty(context, id, qty) {
-    //   context.commit('addQty', id, qty);
-    // },
+    reduceQty(state, data) { // eslint-disable-line
+      const items = state.selected.find((item) => item.data.id === data.data.id);
+      if (items) {
+        items.qty -= 1;
+      }
+    },
   },
   actions: {
     addQty(context, data) {
-      // const items = context.state.selected.find((item) => item.id === id);
-      // if(items) {
       context.commit('addQty', data);
-      // console.log(data);
-      // } else{
-      //   console.log('gagal');
-      // }
+    },
+    reduceQty(context, data) {
+      context.commit('reduceQty', data);
     },
     addOrder(context, data) {
       context.commit('add', data);
-      // console.log(data);
     },
     cancelOrder(context) {
       context.commit('cancel');
@@ -77,7 +75,38 @@ export default new Vuex.Store({
           // console.log(error);
         });
     },
+    handleLogin(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('http://localhost:8000/api/v1/user/login', data)
+          .then((res) => {
+            localStorage.setItem('email', res.data.data.email);
+            resolve(res);
+          })
+          .catch((err) => reject(err));
+      });
+    },
+    register(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('http://localhost:8000/api/v1/user/register', data)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => reject(err));
+      });
+    },
+    getAllOrders(context) {
+      axios
+        .get('http://localhost:8000/api/v1/order')
+        .then((res) => {
+          context.commit('order', res.data.data);
+        })
+        .catch(() => {
+          // console.log(error);
+        });
+    },
   },
+
   modules: {
   },
+
 });

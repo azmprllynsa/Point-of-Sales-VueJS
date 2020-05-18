@@ -5,7 +5,7 @@
     <div class="add-menu" @click="$emit('add')">
       <i class="fas fa-plus"></i>
     </div>
-    <router-link to="/auth/login">
+    <router-link to="/login">
       <div class="sign-out">
         <i class="fas fa-sign-out-alt"></i>
       </div>

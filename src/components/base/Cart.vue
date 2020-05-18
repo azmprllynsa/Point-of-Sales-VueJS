@@ -10,30 +10,29 @@
     </div>
     <div class="cart-content">
       <div class="column empty-cart" v-if="orderItem.length == 0">
-        <img src="../../assets/img/food-and-restaurant.png"
-          style="width:300px;" alt="">
+        <img src="../../assets/img/food-and-restaurant.png" style= 'width:300px' alt="">
         <h5>Your cart is empty</h5>
         <p>Please add some items from the menu</p>
       </div>
       <div class="column is-ordered" v-else>
         <div class="main-list">
-          <div class="column card-order" v-for="(order, index) in orderItem" :key="order.id">
+          <div class="column card-order" v-for="(order) in orderItem" :key="order.data.id">
             <div class="card-image">
               <figure class="image-order is-2by2">
-                <img :src="order.image" :alt="order.image">
+                <img :src="order.data.image" :alt="order.data.image">
               </figure>
             </div>
             <div class="desc-order">
               <div class="name-order">
-                <b>{{order.name}}</b>
+                <b>{{order.data.name}}</b>
               </div>
               <div class="qty-order">
                 <ul>
-                  <li @click="minus(order.id, index)">-</li>
+                  <li @click="reduceQty(order)">-</li>
                   <li>{{ order.qty }}</li>
-                  <li @click="plus(order.id, index)">+</li>
+                  <li @click="addQty(order)">+</li>
                 </ul>
-                <p>Rp. {{ order.price }}</p>
+                <p>Rp. {{ order.data.price * order.qty}}</p>
               </div>
             </div>
           </div>
@@ -46,7 +45,7 @@
           <div class="ppn">
             <p>*Belum termasuk PPN</p>
           </div>
-          <button class="button is-fullwidth button-checkout bg-blue"  @click="$emit('receipt')">
+          <button class="button is-fullwidth button-checkout bg-blue" @click='receipt'>
             Checkout</button>
           <button class="button is-fullwidth button-cancel bg-pink"  @click="$emit('cancelOrder')">
             Cancel</button>
@@ -57,6 +56,7 @@
 </template>
 <script>
 // import OrderItem from '../module/OrderItem.vue';
+// import axios from 'axios';
 
 export default {
   name: 'Cart',
@@ -74,38 +74,50 @@ export default {
 
   // Photo by Jay Wennington on Unsplash
   methods: {
-    plus(id, i) {
-      this.orders[i].qty += 1;
-      // console.log(id);
-      const data = {
-        id,
-        qty: this.orders[i].qty || 1,
-        index: i,
-      };
+    addQty(data) { // eslint-disable-line
       this.$store.dispatch('addQty', data);
+      // console.log([data]);
     },
-
-    minus(id, i) {
-      if (this.orders[i].qty === 1) {
-        this.qty = 1;
-      } else {
-        this.orders[i].qty -= 1;
-      }
-      const data = {
-        id,
-        qty: this.orders[i].qty,
-        index: i,
-      };
-      this.$store.dispatch('addQty', data);
+    reduceQty(data) {
+      this.$store.dispatch('reduceQty', data);
     },
     totalPrice() {
       this.orders = this.orderItem;
-      const total = [];
-      // console.log(total);
-      for (let i = 0; i < this.orders.length; i += 1) {
-        total.push((this.orders[i].price));
+      if (this.orders.length !== 0) {
+        const total = [];
+        for (let i = 0; i < this.orders.length; i += 1) {
+          total.push(this.orders[i].data.price * this.orders[i].qty);
+        }
+        this.total = total.reduce((a, b) => a + b);
       }
-      this.total = total.reduce((a, b) => a + b);
+    },
+    receipt() {
+      // const order = 'order';
+      // axios
+      //   .post(this.$store.state.url + order, {
+      //     userId: this.qty,
+      //     total: this.total,
+      //   })
+      //   .then((res) => {
+      //     console.log(res);
+      //   }).catch((err) => {
+      //     console.log(err);
+      //   });
+      // for (let i = 0; i < this.orderItem.length; i += 1) {
+      //   setTimeout((detail = 'orderDetail') => {
+      //     axios
+      //       .post(this.$store.state.url + detail, {
+      //         productId: this.orders[i].data.id,
+      //         qty: this.orders[i].qty,
+      //         price: this.orders[i].data.price,
+      //       })
+      //       .then((res) => {
+      //         console.log(res);
+      //       });
+      //   }, 1000);
+      // }
+      const receipt = document.querySelector('.modal-receipt');
+      receipt.classList.toggle('is-active');
     },
   },
   updated() {
@@ -196,11 +208,12 @@ export default {
 
 .name-order{
   font-size: 1.1em;
+  margin-left: 10px;
 }
 
 .main-list {
   width: 100%;
-  height: 400px;
+  height: 420px;
   overflow-y: scroll;
 }
 
@@ -237,6 +250,7 @@ export default {
 .qty-order ul{
     display: flex;
     margin-top: 20px;
+    margin-left: 10px;
     align-items: center;
 }
 

@@ -7,20 +7,24 @@
         <div class="receipt-head">
           <div class="modal-checkout">
             <p class="checkout-title">Checkout</p>
-            <p>Cashier : Pevita Pearce</p>
+            <p>Cashier : Azmi Prilly Naisa</p>
           </div>
           <div class="receipt-number">
-            <p>Receipt no: #010410919</p>
+            <p>Receipt no: #POS010410919</p>
           </div>
         </div>
         <hr>
         <ul class="receipt-detail" v-for="order in orderItem" :key="order.id">
-          <li>{{ order.name }}</li>
-          <li>Rp. {{ order.price }}</li>
+          <li>{{ order.data.name }} ({{order.qty}})</li>
+          <li>Rp. {{ order.data.price * order.qty}}</li>
+        </ul>
+        <ul class="receipt-detail receipt-total">
+          <li>Tax (10%)</li>
+          <li>Rp. {{ tax }}</li>
         </ul>
         <ul class="receipt-detail receipt-total">
           <li>Total</li>
-          <li>Rp. {{ total }}</li>
+          <li>Rp. {{ total }} </li>
         </ul>
         <ul class="receipt-detail receipt-payment">
           <li>Payment :</li>
@@ -45,6 +49,7 @@ export default {
   data() {
     return {
       total: 0,
+      tax: 0,
     };
   },
   methods: {
@@ -66,19 +71,27 @@ export default {
       const receipt = document.querySelector('.modal-receipt');
       receipt.classList.toggle('is-active');
     },
+    taxAmmount() {
+      this.orders = this.orderItem;
+      const tax = [];
+      for (let i = 0; i < this.orders.length; i += 1) {
+        tax.push((this.orders[i].data.price * this.orders[i].qty) * 0.1);
+      }
+      this.tax = tax.reduce((a, b) => a + b);
+    },
     totalPrice() {
       this.orders = this.orderItem;
-      // console.log(this.orders);
       const total = [];
       for (let i = 0; i < this.orders.length; i += 1) {
-        total.push(this.orders[i].price);
+        total.push((this.orders[i].data.price * this.orders[i].qty)
+        + (this.orders[i].data.price * this.orders[i].qty) * 0.1);
       }
-      // console.log(total);
       this.total = total.reduce((a, b) => a + b);
     },
   },
   updated() {
     this.totalPrice();
+    this.taxAmmount();
   },
   computed: {
     orderItem() {
