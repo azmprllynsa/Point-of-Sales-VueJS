@@ -6,7 +6,6 @@
 ![GitHub forks](https://img.shields.io/github/forks/azmprllynsa/Library-Vuejs?style=social)
 
 <p align="center">
-  <img height="100" src="../img/fork.png"/>&nbsp;
     <img height="100" src="https://vuejs.org/images/logo.png">
 </p>
 <p align="center">
